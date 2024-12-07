@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gianky NFT Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-4xl font-bold text-center mb-8">Gianky NFT Dashboard</h1>
+        
+        <!-- Contract Info -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h2 class="text-2xl font-semibold mb-4">Contract Information</h2>
+            <p class="mb-2">Contract Address: <span id="contractAddress" class="font-mono"></span></p>
+            <p class="mb-2">Total Supply: <span id="totalSupply" class="font-bold"></span></p>
+            <p class="mb-2">Total Referrals: <span id="totalReferrals" class="font-bold"></span></p>
+        </div>
+
+        <!-- Tier Statistics -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <div id="tierStats" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
+                <!-- Tier cards will be inserted here -->
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+            <!-- Supply Distribution Chart -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-2xl font-semibold mb-4">Supply Distribution</h2>
+                <canvas id="supplyChart"></canvas>
+            </div>
+            
+            <!-- Value Distribution Chart -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-2xl font-semibold mb-4">Value Distribution</h2>
+                <canvas id="valueChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Top Holders -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h2 class="text-2xl font-semibold mb-4">Top Holders</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full table-auto">
+                    <thead>
+                        <tr class="bg-gray-100">
+                            <th class="px-4 py-2">Rank</th>
+                            <th class="px-4 py-2">Address</th>
+                            <th class="px-4 py-2">Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody id="topHolders">
+                        <!-- Top holders will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Address Lookup -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-2xl font-semibold mb-4">Address Lookup</h2>
+            <div class="flex gap-4 mb-4">
+                <input type="text" id="addressInput" placeholder="Enter address" 
+                       class="flex-1 p-2 border rounded">
+                <button onclick="lookupAddress()" 
+                        class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                    Lookup
+                </button>
+            </div>
+            <div id="addressInfo" class="hidden">
+                <!-- Address info will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Utility function to format addresses
+        function formatAddress(address) {
+            return `${address.slice(0, 6)}...${address.slice(-4)}`;
+        }
+
+        // Fetch and display dashboard data
+        async function fetchDashboardData() {
+            try {
+                const response = await fetch('/api/dashboard-data');
+                const data = await response.json();
+                
+                // Update contract info
+                document.getElementById('contractAddress').textContent = formatAddress(data.contract_address);
+                document.getElementById('totalSupply').textContent = data.total_supply;
+                document.getElementById('totalReferrals').textContent = data.total_referrals;
+
+                // Update tier statistics
+                const tierStatsContainer = document.getElementById('tierStats');
+                tierStatsContainer.innerHTML = '';
+                
+                Object.entries(data.tier_stats).forEach(([tier, stats]) => {
+                    const tierCard = document.createElement('div');
+                    tierCard.className = 'bg-white rounded-lg shadow-md p-6';
+                    tierCard.innerHTML = `
+                        <h3 class="text-xl font-semibold mb-2">${tier}</h3>
+                        <p class="mb-1">Supply: ${stats.supply}</p>
+                        <p class="mb-1">Price: ${stats.price} MATIC</p>
+                        <p>Total Value: ${stats.total_value} MATIC</p>
+                    `;
+                    tierStatsContainer.appendChild(tierCard);
+                });
+
+                // Update top holders
+                const topHoldersTable = document.getElementById('topHolders');
+                topHoldersTable.innerHTML = '';
+                
+                data.top_holders.forEach((holder, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="border px-4 py-2">${index + 1}</td>
+                        <td class="border px-4 py-2 font-mono">${formatAddress(holder.address)}</td>
+                        <td class="border px-4 py-2">${holder.balance}</td>
+                    `;
+                    topHoldersTable.appendChild(row);
+                });
+
+                // Update charts
+                updateCharts(data.tier_stats);
+            } catch (error) {
+                console.error('Error fetching dashboard data:', error);
+            }
+        }
+
+        // Address lookup function
+        async function lookupAddress() {
+            const address = document.getElementById('addressInput').value;
+            if (!address) return;
+
+            try {
+                const response = await fetch(`/api/address/${address}`);
+                const data = await response.json();
+                
+                const addressInfo = document.getElementById('addressInfo');
+                addressInfo.innerHTML = `
+                    <div class="border-t pt-4 mt-4">
+                        <p class="mb-2">Balance: ${data.balance} NFTs</p>
+                        <p class="mb-2">Referral Count: ${data.referral_count}</p>
+                        <p class="mb-2">Is Referrer: ${data.is_referrer ? 'Yes' : 'No'}</p>
+                        <h3 class="font-semibold mt-4 mb-2">Owned NFTs:</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            ${data.owned_nfts.map(nft => `
+                                <div class="bg-gray-100 p-4 rounded">
+                                    <p>Token ID: ${nft.token_id}</p>
+                                    <p>Tier: ${nft.tier}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+                addressInfo.classList.remove('hidden');
+            } catch (error) {
+                console.error('Error looking up address:', error);
+            }
+        }
+
+        // Chart update function
+        function updateCharts(tierStats) {
+            const supplyCtx = document.getElementById('supplyChart').getContext('2d');
+            const valueCtx = document.getElementById('valueChart').getContext('2d');
+            
+            const tiers = Object.keys(tierStats);
+            const supplies = tiers.map(tier => tierStats[tier].supply);
+            const values = tiers.map(tier => tierStats[tier].total_value);
+
+            new Chart(supplyCtx, {
+                type: 'pie',
+                data: {
+                    labels: tiers,
+                    datasets: [{
+                        data: supplies,
+                        backgroundColor: [
+                            '#FF6384',
+                            '#36A2EB',
+                            '#FFCE56',
+                            '#4BC0C0'
+                        ]
+                    }]
+                }
+            });
+
+            new Chart(valueCtx, {
+                type: 'pie',
+                data: {
+                    labels: tiers,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: [
+                            '#FF6384',
+                            '#36A2EB',
+                            '#FFCE56',
+                            '#4BC0C0'
+                        ]
+                    }]
+                }
+            });
+        }
+
+        // Initial load
+        fetchDashboardData();
+
+        // Refresh data every 30 seconds
+        setInterval(fetchDashboardData, 30000);
+    </script>
+</body>
+</html>

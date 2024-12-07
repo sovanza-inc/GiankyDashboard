@@ -1,0 +1,107 @@
+/* Custom Dashboard Styling */
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap');
+
+:root {
+    --bg-primary: #121212;
+    --bg-secondary: #1E1E1E;
+    --text-primary: #E0E0E0;
+    --text-secondary: #B0B0B0;
+    --accent-color: #FF3B3F;
+    --border-color: #2C2C2C;
+}
+
+/* Dark Theme Overrides */
+body {
+    font-family: 'Lato', sans-serif !important;
+    background-color: var(--bg-primary) !important;
+    color: var(--text-primary) !important;
+}
+
+/* Streamlit Specific Styling */
+.stApp {
+    background-color: var(--bg-primary);
+}
+
+.stButton>button {
+    background-color: var(--accent-color) !important;
+    color: white !important;
+    border: none !important;
+    transition: all 0.3s ease !important;
+}
+
+.stButton>button:hover {
+    opacity: 0.8 !important;
+    transform: scale(1.05) !important;
+}
+
+/* Sidebar Styling */
+.css-1aumxhk {
+    background-color: var(--bg-secondary) !important;
+}
+
+.css-1aumxhk .stRadio, 
+.css-1aumxhk .stSelectbox {
+    color: var(--text-primary) !important;
+}
+
+/* Metric Cards */
+.stMetric {
+    background-color: var(--bg-secondary);
+    border-radius: 10px;
+    padding: 15px;
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+
+.stMetric:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+}
+
+/* Data Table */
+.stDataFrame {
+    background-color: var(--bg-secondary) !important;
+    color: var(--text-primary) !important;
+}
+
+/* Chart Styling */
+.stPlotlyChart {
+    background-color: var(--bg-secondary);
+    border-radius: 10px;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+}
+
+/* Loading Spinner */
+.stSpinner > div {
+    border-color: var(--accent-color) transparent var(--accent-color) transparent !important;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--text-primary) !important;
+    font-family: 'Lato', sans-serif !important;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--accent-color);
+    border-radius: 5px;
+}
+
+/* Hover Effects */
+.stMarkdown, .stText {
+    transition: all 0.3s ease;
+}
+
+.stMarkdown:hover, .stText:hover {
+    transform: translateY(-3px);
+}
