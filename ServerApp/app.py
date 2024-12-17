@@ -40,7 +40,8 @@ POLYGONSCAN_API_KEY = os.getenv('POLYGONSCAN_API_KEY', '')
 def inject_custom_css():
     """Inject custom CSS styles into the Streamlit app"""
     try:
-        with open('styles.css', 'r') as f:
+        css_path = os.path.join(os.path.dirname(__file__), 'styles.css')
+        with open(css_path, 'r') as f:
             css = f.read()
         st.markdown(f'<style>{css}</style>', unsafe_allow_html=True)
     except Exception as e:
@@ -1485,10 +1486,6 @@ def render_nft_details(address):
             # Progress bar
             progress_bar = st.progress(0)
             status_placeholder = st.empty()
-            
-            # Update progress for initialization
-            progress_bar.progress(10)
-            status_placeholder.markdown("Initializing...")
             
             # Hardcoded video mapping for NFT tiers
             NFT_TIER_VIDEOS = {

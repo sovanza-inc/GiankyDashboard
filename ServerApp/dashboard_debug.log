@@ -2209,3 +2209,12 @@ requests.exceptions.HTTPError: 400 Client Error: Bad Request for url: https://al
 2024-12-07 16:22:21,499 - INFO - Successfully retrieved VIP price: 500 POL
 2024-12-07 16:22:21,836 - INFO - Successfully retrieved Premium price: 1000 POL
 2024-12-07 16:22:22,672 - INFO - Successfully retrieved Diamond price: 5000 POL
+2024-12-18 03:20:56,848 - __main__ - INFO - Successfully loaded contract ABI from /Users/mac/Desktop/GiankyDashboarrd/ServerApp/contract_abi.json
+2024-12-18 03:20:57,615 - __main__ - INFO - Successfully initialized Web3 and contract. Connected to https://polygon-rpc.com
+2024-12-18 03:20:57,617 - __main__ - WARNING - Logo not found at /Users/mac/Desktop/GiankyDashboarrd/logo.png
+2024-12-18 03:20:58,337 - __main__ - INFO - Starter price hardcoded to 20 POL
+2024-12-18 03:20:58,561 - __main__ - INFO - Successfully retrieved Basic price: 50 POL
+2024-12-18 03:20:58,796 - __main__ - INFO - Successfully retrieved Standard price: 100 POL
+2024-12-18 03:20:59,030 - __main__ - INFO - Successfully retrieved VIP price: 500 POL
+2024-12-18 03:20:59,424 - __main__ - INFO - Successfully retrieved Premium price: 1000 POL
+2024-12-18 03:20:59,646 - __main__ - INFO - Successfully retrieved Diamond price: 5000 POL
